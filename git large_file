@@ -1,0 +1,43 @@
+Managing Large Files / Versioning large files
+ 
+How can we help?
+
+Versioning large files
+Git Large File Storage (Git LFS) is an open-source extension to Git that allows you to work with large files the same way as any other text file.
+
+With Git LFS, you and your repository's contributors can clone large files from the Git command line, open pull requests, and comment on the diffs. It's the ideal solution for pushing files to GitHub that are larger than 100 MB.
+
+For more information on Git LFS, visit https://git-lfs.github.com.
+
+About Git Large File Storage
+
+Git LFS lets you store files up to 2 GB in size.
+
+Installing Git Large File Storage
+
+In order to use Git LFS, you'll need to download and install a new program that's separate from Git.
+
+Configuring Git Large File Storage
+
+Once Git LFS is installed, you need to associate it with a large file in your repository.
+
+Collaboration with Git Large File Storage
+
+With Git LFS enabled, you'll be able to fetch, modify, and push large files just as you would expect with any file that Git manages. However, a user that doesn't have Git LFS will experience a different workflow.
+
+Viewing storage and bandwidth usage for a personal account
+
+Your personal account's Billing page lists your monthly bandwidth quota and remaining storage for Git LFS.
+
+Viewing storage and bandwidth usage for an organization
+
+Your organization's Billing page lists your monthly bandwidth quota and remaining storage for Git LFS.
+
+ Contact a human
+Article versions
+GitHub.com
+GitHub Enterprise 2.7
+GitHub Enterprise 2.6
+GitHub Enterprise 2.5
+GitHub Enterprise 2.4
+GitHub Enterprise 2.3
