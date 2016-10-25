@@ -1,0 +1,63 @@
+Branching a Repository
+Branching offers a way to work on a new feature without affecting the main codebase. You can create a branch from Bitbucket or from your terminal. After you make changes, you push your branch to Bitbucket so that you can get it reviewed with a pull request.
+On this page:
+Creating a branch
+Create a Git branch
+Create a Mercurial branch
+Viewing Commits by Branch
+Closing a Branch
+Creating a branch
+You can create branches on Git and Mercurial repositories. Git branches always have a name, but Mercurial has the concept of a branch and a named branch. For more information, Steve Losh's guide is a good resource explaining branching in the two systems.
+Create a Git branch
+There are two ways to create a Git branch. The first way is from Bitbucket.
+Click Create branch in the left panel.
+From the popup that appears, enter a Branch name and click Create.
+After you create a branch, you need to check it out from your local system. Use the fetch and checkout commands that Bitbucket provides, similar to the following:
+
+1
+$ git fetch && git checkout <feature_name>
+Make your changes locally and then add, commit, and push your changes to the feature branch:
+
+1
+$ git add .
+2
+$ git commit -m "adding a change from the feature branch"
+3
+$ git push origin <feature_branch>
+View the Source page of your repository in Bitbucket. You should see both the master and the feature branch. When you select the feature branch, you see the Source page from that perspective. Select the feature branch to view its Recent commits.
+You can create a branch locally as long as you have a cloned version of the repo.
+From your terminal window, list the branches on your repository.
+
+1
+$ git branch
+2
+* master
+This output indicates there is a single branch, the master and the asterisk indicates it is currently active.
+Create a new feature branch in the repository
+
+1
+$ git branch <feature_branch>
+Switch to the feature branch to work on it.
+
+1
+$ git checkout <feature_branch>
+You can list the branches again with the git branch command.
+Commit the change to the feature branch:
+
+1
+$ git add .
+2
+$ git commit -m "adding a change from the feature branch"
+Switch back to the master branch.
+
+1
+$ git checkout master
+Merge changes from the <feature_branch> into the master branch:
+
+1
+$ git merge <feature_branch>
+Push the feature branch to Bitbucket:
+
+1
+$ git push origin <feature_branch>
+View the Source page of your repository in Bitbucket. You should see both the master and the feature branch. When you select the feature branch, you see the Source page from that perspective. Select the feature branch to view its Recent commits.
