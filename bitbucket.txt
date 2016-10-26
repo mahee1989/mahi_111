@@ -1,4 +1,4 @@
-Branching a Repository
+branching a Repository
 Branching offers a way to work on a new feature without affecting the main codebase. You can create a branch from Bitbucket or from your terminal. After you make changes, you push your branch to Bitbucket so that you can get it reviewed with a pull request.
 On this page:
 Creating a branch
