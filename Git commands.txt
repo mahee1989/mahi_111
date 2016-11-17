@@ -1,0 +1,146 @@
+Working with Git:-
+
+1. Clone the repository from GITHUB, use your git account name instead of “gituser”.
+         ~$ mkdir git_repo
+         ~$ cd git_repo
+        ~/git_repo$ git clone url 
+
+2. Check the cloning is done or not
+         ~$ ls
+
+3. Goto the git repository
+         ~$ cd  Repository name
+
+4. Create a branch
+         ~$ git branch branch_name
+         ~$ git push origin branch_name
+
+5. Find the branches in current GIT repo by using following command
+          ~$ git branch -a
+
+6. Delete a branch
+         ~$ git branch -d branch_name
+         ~$ git push origin –delete branch_name
+               *master
+           “*” symbol indicates the current branch
+ 
+7. Check/See the last commit messages in GIT repo by following command
+         ~$ git log
+    It will show the entire logs which are done by the developer and with commit ID and comments
+
+
+8. Enter/Switch from current branch to another branch
+         ~$ git checkout branch_name
+
+9. Get the updated data from the remote git server into current local branch
+         ~$ git pull --rebase
+
+10. Add/Change source code in GIT repo
+         ~$ git status : This will give you the information about the changed files list.
+          ~$ git add file_name_with_path : This will add the changed files into current local branch.
+  Or User want to add all changed file at once “git add .” command can use.
+        ~$ git commit -a: This will add the changed files into the local current branch permanently.
+         ~$ git push origin Branch_name: It will add the changes in current local branch to remote git repository.
+           E.g.: git push origin master
+
+11. Merge the two branches in GIT repo
+           ~$ git checkout branch_X
+     branch_X want to merge with branch_Y
+           ~$ git merge branch_Y
+      Now branch_X and branch_Y both have same data
+Note: In the case of merging any conflicts may occurs. If you find any error message while doing merge follow the rules to overcome the conflicts.
+        Rule 1: ~$ git status
+Any conflict happens it will show the conflict files in red color. Open those files and find the symbol “<<<<<<” 
+  and remove the old data with name HEAD and keep the newly changed data and save the file.
+         Rule 2: ~$ git add .
+         Rule 3: ~$ git status
+     now it will show the changed files list with green color display.
+       Rule 3: ~$ git commit -a
+       Rule 4: ~$ git push origin branch_X
+
+12. Revert back the already commit change in git branch
+        ~$ git revert commit_ID
+    commit_ID can get from git log
+        ~$ git push origin branch_X
+13. Selected commits of branch_X need to add to branch_Y
+
+  The user want to add particular commit from branch_Y to branch_X, the following command is used.
+        ~$ git cherry-pick -x commit_ID
+
+14. Create a tag
+        ~$ git tag
+   This shows the tags list in GIT repo.
+        ~$ git tag tag_name
+   This will create the tag with current data of the current local branch.
+         ~$ git push --tags
+
+   This will push the data into the remote git server
+15. Delete a tag from the GIT repo
+         ~$ git tag -d tag_name
+         ~$ git push --tags
+
+16.git fetch
+ Fetches all the objects from the remote repository that are not present in the local one.                                                      
+           ~$git fetch origin
+
+17.git log
+Shows a listing of commits on a branch including the corresponding details.  
+        ~$git log
+
+18.git ls-tree
+ Shows a tree object, including the mode and the name of each item and the SHA-1 value of the blob or the tree that it points to.
+      ~$ git ls-tree master^{tree} 100644 blob
+
+19.git cat-file
+  Used to view the type of an object through the SHA-1 value.
+        ~$ git cat-file -t
+
+20.gitk
+  Graphical Tcl/Tk based interface to a local Git repository. 
+      ~$gitk
+
+21.git log
+  Shows a listing of commits on a branch including the corresponding details  
+     ~$git log
+
+22.git instaweb
+  Runs a web server with an interface into your local repository and automatically directs a web browser to it. 
+          ~$git instaweb --httpd=webrick git instaweb --stop
+
+23.git archive
+  Creates a tar or zip file including the contents of a single tree from your repository. 
+          ~$ git archive --format=zip master^ README >file.zip
+24.git gc
+  Garbage collector for your repository. Optimizes your repository. Should be run occasionally. 
+         ~$ git gc Counting objects
+
+25.git fsck
+  Does an integrity check of the Git file system, identifying corrupted objects. 
+   ~$ git fsck
+
+26.git prune
+  Removes objects that are no longer pointed to by any object in any reachable branch. 
+   ~$ git prune
+
+
+SVNNNNNNNNNNNNNN
+
+ svn
+ svn c/o
+ svn c/i
+ add filename
+ svn ci -m "add"
+ svn del filename
+ svn update
+ svn update -r4(revision)
+ svn move s d
+ svn revert
+ svn expor
+ svn import
+ svn conflict
+ svn ls
+ svn mkdir
+ svn status
+ svn cat filename
+ svn log
+ svn info
