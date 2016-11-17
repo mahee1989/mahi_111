@@ -1,0 +1,384 @@
+Integrator's Guide
+==================
+
+
+Introduction
+------------
+
+The role of the integrators is to review, test and integrate the developers
+modifications on the Git repositories. In addition, they are responsible to
+synchronize the different Git repositories across premises.
+
+
+Initial creation of Git repositories
+------------------------------------
+
+The first step is to get a local Git repository. You can either create a new
+empty one using `git init`, either use the delivery of a sub-contractor with
+`import-delivery`, either use an existing one previously created with the
+previous methods.
+
+To create a new empty Git repository:
+
+$ git init .
+
+To import a delivery:
+
+    $ mkdir <repo_name>
+    $ cd <repo_name>
+    $ import-delivery <delivery_file>
+    $ git checkout -f master
+
+The second step is to configure your repository for use with `git svn`:
+
+    $ cd <repo_name>
+    $ git config --local --add svn-remote.svn.url <svn_repository_url>
+    $ git config --local --add svn-remote.svn.fetch 'trunk:refs/remotes/trunk'
+    $ git config --local --add svn-remote.svn.branches 'branches/*:refs/remotes/*'
+    $ git config --local --add svn-remote.svn.tags 'tags/*:refs/remotes/tags/*'
+    $ git svn fetch --use-log-author
+
+You should now have a Git repository containing the latest SubVersion commits.
+
+Synchronization of Git repositories
+-----------------------------------
+
+In order to synchronize the Morpho and eInfoChips Git repositories, an
+integrator on each side shall generate a delivery file using `export-delivery`.
+The generated file shall be sent to each other, and imported using
+`import-delivery`.
+
+These two scripts are available in the Debian package
+`morpho-delivery_<version>.deb`. You can install it using `dpkg` command:
+
+    $ sudo gdebi morpho-delivery_<version>.deb
+
+
+**Note about incremental export**:
+Each time an exportation is performed using `export-delivery`, the list of
+exported commits is saved in the file `.git/marks`. This file is read during
+further exportations to only export new commits.
+To force a full exportation, you should remove the file `.git/marks` before
+calling `export-delivery`.
+
+Merge of developers commits to `master` branch (Morpho only)
+------------------------------------------------------------
+
+Prior to integrating new developer commits to `master` branch, this branch shall
+be updated with latest SubVersion commits with `git svn fetch`  command:
+
+    $ cd <repo_name>
+    $ git svn fetch --use-log-author
+
+In order to merge the developers commits from a development branch to the
+`master` branch, each commit shall be reviewed, tested (basic integration tests
+shall be defined for each commit) and merged on `master` branch using
+`git cherry-pick`. The integrator shall check that the commit messages are
+correct and point to a valid Jira bug. If you need to modify the commit message,
+your should use the option `-n`:
+
+    $ cd <repo_name>
+    $ git checkout master   # Switch to the branch you want to apply the merge
+    $ git cherry-pick -n <commit_hash>
+    $ git gui  # `git gui` is a GUI tool to simplify Git commits.
+
+Report of Git `master` branch to SubVersion (Morpho only)
+---------------------------------------------------------
+
+Once the `master` branch has been updated with latest developments, you can
+push your local `master` branch to the Morpho SubVersion repository using
+`git svn dcommit` command:
+
+    $ cd <repo_name>
+    $ git svn dcommit
+
+If a commit is rejected by SubVersion server, you should fix the commit on your
+local branch and retry. To modify a commit on a branch, you have to create a
+local branch starting just before the commit to fix, and use `cherry-pick -n` to
+re-apply and fix the commit. All further commits can be cherry-picked as well.
+
+Since the `master` branch is now up-to-date, you can create new development
+branches:
+
+    $ git branch ei_<week_number> master
+    $ git branch morpho_<week_number> master
+The resulting Git repository shall be exported back to eInfoChips using
+`export-delivery`
+----------------------------------------------------------------------------------
+SERVER  ADMIN GUIDE
+------------------------------------------------------------------------------------
+Server administration guide
+===========================
+
+
+Introduction
+------------
+
+These instructions will setup the integration server for use with MA1000
+project. The following services will be provided:
+
+* *Hudson* for automatic build: <http://ei-mirror.epod.sec.safran:8080>
+* *Git* for source code management
+
+
+Ubuntu Server 12.04 LTS 32 bits
+-------------------------------
+
+The following instructions have been tested on a up-to-date (2012-10-02) Ubuntu
+Server 12.04 32 bits.
+
+It should work on Debian as well.
+
+
+Hudson
+------
+
+Version 2.2.1
+
+Installation instructions for Ubuntu can be found here:
+<http://wiki.hudson-ci.org/display/HUDSON/Installing+Hudson+on+Ubuntu>
+
+
+Git server
+----------
+
+Instructions have been taken from <https://github.com/sitaramc/gitolite>.
+
+* Administrator workstation configuration
+
+Create a SSH key:
+    $ ssh-keygen
+
+You should obtain a public key in file `$HOME/.ssh/id_rsa.pub`. Upload this file
+to the server in `/home/git/<administrator_name>.pub` with sftp or any other
+tool, you will need this file in next step.
+
+
+* Server configuration
+
+Install git command-line client:
+
+    $ sudo apt-get install git
+
+Create a dedicated user named “git” to host the server:
+
+    $ sudo adduser git
+
+Login into `git` account to execute next commands.
+
+Create a bin directory into user directory:
+
+    $ mkdir -p $HOME/bin
+
+Download gitolite:
+
+    $ git clone git://github.com/sitaramc/gitolite
+
+Install gitolite to `$HOME/bin` directory:
+
+    $ gitolite/install -to $HOME/bin
+Add administrator public key:
+
+    $ bin/gitolite setup -pk id_rsa.pub
+
+
+* Adding users and repositories
+
+From the administrator workstation:
+
+    $ git clone git@<server address>:gitolite-admin
+
+Go to the `gitolite-admin/keydir`, you should see the public key of the
+administrator:
+
+    $ ls gitolite-admin/keydir
+
+    <administrator_name>.pub
+
+Place in this directory the public key of every developers so that they can
+access the repositories. You should obtain:
+
+    $ ls gitolite-admin/keydir
+
+    <administrator_name>.pub
+    <developer#1>.pub
+    ...
+    <developer#n>.pub
+
+Modify configuration file by editing the file `gitolite.conf` with your favorite
+editor:
+
+    $ nano gitolite-admin/conf/gitolite.conf
+
+The format of this file can be found on <https://github.com/sitaramc/gitolite>.
+Here is an example:
+
+    $ cat gitolite-admin/conf/gitolite.conf
+    repo gitolite-admin
+        RW+     =   cedric
+        RW+     =   romain
+
+    repo testing
+        RW+     =   @all
+
+    repo MA5G_SW
+        RW      =    cedric
+        RW      =    romain
+
+The files `cedric.pub` and `romain.pub` are present in directory `keydir`.
+
+Commit your modifications to the `gitolite-admin/conf/gitolite.conf` using
+`git commit` and `git push`, or a GUI client like `gitk` or `git gui`.
+
+Any new repository specified in file `gitolite.conf` will be created
+automatically.
+-----------------------------------------------------------------------------
+Developers Guide
+--------------------------------------------------------------------------------
+Developer's Guide
+=================
+
+
+Introduction
+------------
+
+This chapter is a brief user guide for MA1000 developers. You will find
+instructions on how to setup your environment, including Eclipse, the cross
+compiler, Git and last but not least how to build the whole thing.
+
+
+Environment setup
+-----------------
+
+* Supported Linux distributions
+
+The supported Linux distributions are Debian Squeeze and Ubuntu 12.04, both in
+32 bits version.
+
+
+* Installing Git and ssh
+
+You can install Git and ssh by installing the `git`, `gitk`, `git-gui` and `ssh`
+packages:
+
+    $ sudo apt-get install git gitk git-gui ssh
+
+Optionally, you may find the packages `meld`, `gitk` and `git-gui` very useful
+to enhance your Git experience.
+
+    $ sudo apt-get install meld gitk git-gui
+
+
+* Installing MEP build environment
+
+In order to install the MEP build environment, you have two choices: either
+you refer to official MEP document `SSE-0000092165-01 - MEP User Guide.pdf`
+which can be found in MEP_SW repository under `oe-mep/documentation`, either
+you directly install the Debian package `morpho-mep-build_<version>_i386.deb` by
+opening it from a file manager or from the command line:
+ $ sudo gdebi morpho-mep-build_<version>_i386.deb
+
+
+* Configuring Git and ssh
+
+You shall configure your user name and email. They will be present in your
+commit messages:
+
+    $ git config --global user.name "Your Name Here"
+    $ git config --global user.email "your_email@youremail.com"
+
+In order to gain access to the Git repository, you have to generate an `ssh`
+authenticating key:
+
+    $ ssh-keygen
+
+You shall then send your public key `$HOME/.ssh/id_rsa.pub` to your Git server
+administrator. You can repeat this process if you use several computers.
+
+
+Source code management
+----------------------
+
+* Git branches organization
+
+The main branch holding all developments and which is used to generate official
+software releases is `master`. To avoid conflicts between Morpho and eInfoChips
+commits, only one integrator will be allowed to commit on this branch. Morpho
+developers and eInfoChips developers will use their own branches for commits.
+Each week, the commits which are considered stable enough are merged onto this
+`master` branch by the integrator (see commits 1, 2, 4 and 5 on example below).
+The non-merged commits shall be reported to the newly created development branch
+for a later merge (see commit 3 in the example below).
+
+<pre>
+
+    __1__2__3__            __3__6__7__8__                  ei_###
+   /                      /
+__/_____________1_2_4_5__/________________3_6_7_8_9_10____ master
+  \                      \
+   \__4__5_____           \__9__10_______                  morpho_###
+
+</pre>
+
+
+* Cloning the repository
+
+In order to get the source code, you have to clone the Git repository on your
+computer:
+
+    # For Morpho developers:
+    $ git clone git@ei-mirror.epod.sec.safran:MA5G_SW
+
+    # For eInfoChips developers:
+    $ git clone git@...:MA5G_SW
+
+If prompted for a password, please check that your ssh public key has been
+generated and sent to your Git administrator, as described in previous chapter.
+
+
+* Creating a local branch for developments
+
+When developing using Git, you have to create a local branch to hold your
+modifications. This local branch should be created from the latest available
+development branch:
+
+    # To get the list of available development branches:
+    $ git branch -a
+
+    # To create a local branch from a remote development branch:
+    $ git checkout -b mybranch <remote development branch to track>
+
+You can freely commit to your local branch (`mybranch` in the example above)
+* Committing
+
+To get a status of your workspace, you can use `git status`. You can select the
+modified files to commit using `git add`. To commit the modifications to your
+local branch, just type `git commit`. You will be prompted for a commit message.
+
+You can also perform all these steps inside `git gui` if you prefer.
+
+
+* Pushing one or more local commits to the remote Git repository
+
+Once you are satisfied with the commits present on your local branch, you can
+*push* them to the remote tracked branch. To do so type:
+
+    $ git push
+
+
+* Requesting code review and merge on `master`
+
+Once your developments have been committed to a development branch on the Git
+server, you can ask your integrator to review and merge your branch on the
+`master` branch.
+
+
+Build
+-----
+
+In order to build the workspace, please follow the document
+`SSE-0000092165-01 - MEP User Guide.pdf` which can be found in `MEP_SW`
+repository under `oe-mep/documentation`.
+
+
+             
