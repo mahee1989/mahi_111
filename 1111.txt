@@ -1,0 +1,6 @@
+gerrit document details
+
+1. install jdk
+2.installed git
+3.http(Authentication :reverse proxy server)
+4.apache http server
